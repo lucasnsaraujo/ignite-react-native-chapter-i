@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   View, 
   Text, 
@@ -7,7 +7,8 @@ import {
   Platform,
   Keyboard,
   FlatList,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
+  SafeAreaView
 } from 'react-native'
 
 import { Button } from '../components/Button'
@@ -25,6 +26,18 @@ export function Home() {
   const [newSkill, setNewSkill] = useState('');
   const [skills, setSkills] = useState([])
   const [error, setError] = useState(false)
+  const [greeting, setGreeting] = useState()
+
+  useEffect(()=> {
+    const currentHour = new Date().getHours()
+    if (currentHour < 12) {
+      setGreeting('Good morning')
+    } else if (currentHour >= 12 && currentHour < 18 ) {
+      setGreeting('Good afternoon')
+    } else {
+      setGreeting('Good evening')
+    }
+  }, [])
 
   function handleAddSkill() {
     if (newSkill != '') {
@@ -47,6 +60,7 @@ export function Home() {
       <View style={styles.container}>
 
         <Text style={styles.title}>Welcome, Lucas</Text>
+        <Text style={styles.greeting}>{greeting}</Text>
 
         <TextInput
         style={styles.input}
@@ -110,6 +124,9 @@ const styles = StyleSheet.create({
   },
   highlight: {
     color: '#a370f7'
+  },
+  greeting: {
+    color: '#afafaf'
   }
   
 })
