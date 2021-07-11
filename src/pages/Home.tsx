@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, ReactChildren, ReactChild } from 'react';
 import { 
   View, 
   Text, 
@@ -8,13 +8,21 @@ import {
   Keyboard,
   FlatList,
   TouchableWithoutFeedback,
-  SafeAreaView
 } from 'react-native'
 
 import { Button } from '../components/Button'
 import { SkillCard } from '../components/SkillCard';
 
-function DismissKeyboard({children}) {
+interface SkillData {
+  id: string;
+  name: string;
+}
+
+interface DismissKeyboardProps {
+  children: ReactChild | ReactChildren
+}
+
+function DismissKeyboard({children}: DismissKeyboardProps) {
   return(
   <TouchableWithoutFeedback onPress={()=> {Keyboard.dismiss()}}>
     {children}
@@ -24,9 +32,9 @@ function DismissKeyboard({children}) {
 export function Home() {
 
   const [newSkill, setNewSkill] = useState('');
-  const [skills, setSkills] = useState([])
+  const [skills, setSkills] = useState<SkillData[]>([])
   const [error, setError] = useState(false)
-  const [greeting, setGreeting] = useState()
+  const [greeting, setGreeting] = useState('')
 
   useEffect(()=> {
     const currentHour = new Date().getHours()
@@ -40,8 +48,12 @@ export function Home() {
   }, [])
 
   function handleAddSkill() {
+    const data = {
+      id: String(new Date().getTime()),
+      name: newSkill
+    }
     if (newSkill != '') {
-      setSkills(oldState => [...oldState, newSkill])
+      setSkills(oldState => [...oldState, data])
       setNewSkill('')
       setError(false)
     } else {
@@ -49,15 +61,12 @@ export function Home() {
     }
   }
 
-  function handleInputChange(text) {
-    console.log(text)
-  }
-
   return (
 
     <DismissKeyboard>
 
       <View style={styles.container}>
+        
 
         <Text style={styles.title}>Welcome, Lucas</Text>
         <Text style={styles.greeting}>{greeting}</Text>
@@ -84,9 +93,9 @@ export function Home() {
         <FlatList
           ListEmptyComponent={<Text style={styles.text}> It's so quiet here. Type something and click <Text style={styles.highlight}>Add</Text></Text>}
           data={skills}
-          keyExtractor={item => (item + (Math.random() * 100).toString())}
+          keyExtractor={item => (item.id)}
           renderItem={({item}) => (
-            <SkillCard skill={item}/>
+            <SkillCard skill={item.name}/>
             )}
             />
       </View>
